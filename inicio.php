@@ -21,35 +21,9 @@
             overflow: hidden;
         }
 
-        /* header {
-            background: #003366; 
-
-            color: #fff;
-            padding: 20px 0;
-        } */
-
-        /* header h1 {
-            margin: 0;
-        }
-
-        nav ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        nav ul li {
-            display: inline;
-            margin-right: 20px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-        } */
-
         .hero {
             background: url('fondo-hero.jpg') no-repeat center center/cover;
-            color: #fff;
+            
             padding: 60px 0;
             text-align: center;
         }
@@ -101,13 +75,7 @@
             font-style: italic;
         }
 
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            background: #003366; /* Azul oscuro */
-            color: #fff;
-        }
-
+        
         .input-group {
             margin-bottom: 15px;
         }
@@ -127,6 +95,16 @@
 
         .input-group textarea {
             resize: vertical; /* Permitir que el usuario cambie el tamaño verticalmente */
+        }
+
+        .video-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        iframe {
+            max-width: 100%;
+            height: auto;
         }
     </style>
 </head>
@@ -174,6 +152,15 @@
         </div>
     </section>
 
+    <!-- Sección del video -->
+    <section class="video-container">
+        <h2>Mira nuestro video</h2>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/4-z6X4Dz5EY?si=Wl2m-CG9kf9iBMdC&rel=0&autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+
+    </section>
+
     <section id="contacto">
         <div class="container">
             <h2>Contacto</h2>
@@ -195,10 +182,6 @@
         </div>
     </section>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Colegio Nuevos Horizontes. Todos los derechos reservados.</p>
-        </div>
-    </footer>
+    <?php include 'logs/footer.php' ?>
 </body>
 </html>

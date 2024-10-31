@@ -4,10 +4,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <main>
-<div class="container" style="width: 80%; margin-top:25px;margin: auto; padding: 20px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+<div class="container" style="width: 80%; margin-top:25px; margin: auto; padding: 20px; background: #f9f9f9; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
     <h3 style="text-align: center; color: #003366; padding-bottom: 20px;">Registro de Profesores</h3>
     
-    <form action="guardar_profesor.php" method="POST" style="margin-top: 20px;">
+    <form action="operacionesPHP/guardar_profesor.php" method="POST" style="margin-top: 20px;">
         <div class="input-group" style="margin-bottom: 15px; padding: 10px;">
             <label for="nombre" style="display: block; margin-bottom: 5px; font-weight: bold;">
                 <i class="fas fa-user" style="margin-right: 8px;"></i>
@@ -37,7 +37,35 @@
                 <i class="fas fa-book" style="margin-right: 8px;"></i>
                 Materia a Dar:
             </label>
-            <input type="text" name="asignatura" required style="width: 100%; padding: 15px; border: 1px solid #007BFF; border-radius: 5px; transition: border-color 0.3s;">
+            <select name="asignatura" required style="width: 100%; padding: 15px; border: 1px solid #007BFF; border-radius: 5px; transition: border-color 0.3s;color:black">
+                <option value="">Seleccione una asignatura</option>
+                <?php
+                // Conexión a la base de datos
+                $conexion = mysqli_connect("localhost", "root", "", "academia", "3306");
+                
+                // Verificar si la conexión es exitosa
+                if (!$conexion) {
+                    die("Error en la conexión: " . mysqli_connect_error());
+                }
+
+                // Consulta para obtener las asignaturas de la tabla notas
+                $sql = "SELECT DISTINCT nombre FROM asignaturas";
+                $resultado = mysqli_query($conexion, $sql);
+
+                // Verificar si hay resultados
+                if (mysqli_num_rows($resultado) > 0) {
+                    // Iterar sobre cada asignatura y crear una opción en el select
+                    while ($fila = mysqli_fetch_assoc($resultado)) {
+                        echo '<option value="' . htmlspecialchars($fila['nombre']) . '">' . htmlspecialchars($fila['nombre']) . '</option>';
+                    }
+                } else {
+                    echo '<option value="">No hay asignaturas disponibles</option>';
+                }
+
+                // Cerrar la conexión
+                mysqli_close($conexion);
+                ?>
+            </select>
         </div>
 
         <div class="input-group" style="margin-bottom: 15px; padding: 10px;">
