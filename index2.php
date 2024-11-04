@@ -23,7 +23,7 @@
 <main>
 
         <div class="container" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-            <form action="" style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+            <form action="" onclick="login()" name="login" style="background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
                 <div class="mb-3" style="margin-bottom: 15px;">
                     <label for="usuario" class="form-label" style="margin-bottom: 5px; font-weight: bold;">USUARIO</label>
                     <input
@@ -59,14 +59,22 @@
 
     </main>
 
-    <?php
 
+    <?php include 'logs/footer.php';?>
 
+    <script>
+        function login(){
+            let usuario = document.login.usuario.value;
+            let password = document.login.password.value;
 
-include 'logs/footer.php';
+            if(usuario == 'andres' && password == '1234'){
+                alert('Login OK')
+            } else {
+                alert('NOOO')
+            }
 
-
-?>
+        }
+    </script>
     <!-- Bootstrap JavaScript Libraries -->
     <script
         src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

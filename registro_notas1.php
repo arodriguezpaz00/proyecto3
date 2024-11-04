@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modal de Consulta de Estudiantes</title>
+    <title>Academia</title>
     <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -72,7 +72,7 @@
   </div>
 </form>
 
-<form action="connect.php" method="post">
+<!-- <form action="connect.php" method="post">
   <div class="container" style="border: 2px solid #007bff; border-radius: 10px; padding: 20px; margin-top: 30px;">
     
     <div class="mb-3">
@@ -95,36 +95,85 @@
       <button type="reset" class="btn btn-danger">BORRAR</button>
     </div>
   </div>
-</form>
+</form> -->
 
 
 <!-- Modal de Consulta de Estudiantes -->
+<!-- Botón para abrir el modal de búsqueda -->
 <div class="container" style="text-align: right; margin-top: 20px;">
-  <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Consultar Estudiantes</button>
+  <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#searchStudentModal">Consultar Estudiantes</button>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+<!-- Modal de búsqueda por ID -->
+<div class="modal fade" id="searchStudentModal" tabindex="-1" aria-labelledby="searchStudentLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="staticBackdropLabel">Identificación del Estudiante</h5>
+        <h5 class="modal-title" id="searchStudentLabel">Identificación del Estudiante</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <label for="" class="form-label">Número Identificador:</label>
-        <input type="text" class="form-control" />
+        <label for="studentIdInput" class="form-label">Número Identificador:</label>
+        <input type="number" class="form-control" id="studentIdInput" required />
         <small class="form-text text-muted">Colocar solo numérico</small>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="submit" class="btn btn-primary">Consultar</button>
+        <button type="button" class="btn btn-primary" onclick="fetchStudentData()">Consultar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar los datos completos del estudiante -->
+<div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="studentDetailsLabel">Detalles del Estudiante</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="studentDetailsBody">
+        <!-- Los detalles del estudiante se cargarán aquí -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
 </div>
 
 <?php include 'logs/footer.php'?>
+
+<!-- JavaScript para manejar la consulta -->
+<script>
+  function fetchStudentData() {
+    const studentId = document.getElementById('studentIdInput').value;
+
+    if (!studentId) {
+      alert("Por favor, ingrese un número identificador válido.");
+      return;
+    }
+
+    // Realizar la solicitud AJAX para buscar los datos del estudiante
+    fetch(`./operacionesPHP/alumno/buscar_estudiante.php?id=${studentId}`)
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('studentDetailsBody').innerHTML = data;
+
+        // Mostrar el modal de detalles
+        const studentDetailsModal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
+        studentDetailsModal.show();
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("Error al buscar el estudiante. Por favor, intente de nuevo.");
+      });
+  }
+</script>
+
+
+
 
 <!-- Bootstrap Bundle JS (con Popper.js incluido) -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>

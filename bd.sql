@@ -35,3 +35,22 @@ INSERT INTO asignaturas (nombre, horas) VALUES
 ('MF0950_8 : Seguridad en Aplicaciones Web', 30);
 
 SELECT *  from asignaturas;
+
+CREATE TABLE estudiantes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    dni VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL,
+    telefono VARCHAR(15) NOT NULL
+);
+
+CREATE TABLE estudiante_asignatura (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    estudiante_id INT NOT NULL,
+    asignatura_id INT NOT NULL,
+    fecha_asociacion DATE DEFAULT CURRENT_DATE,
+    FOREIGN KEY (estudiante_id) REFERENCES estudiantes(id),
+    FOREIGN KEY (asignatura_id) REFERENCES asignaturas(id)
+);
+
+SELECT * from estudiantes;
