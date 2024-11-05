@@ -107,10 +107,13 @@
         function setCurrentDate() {
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
-            const month = String(today.getMonth() + 1).padStart(2, '0'); // Enero es 0!
+            const month = String(today.getMonth() + 1).padStart(2, '0');
             const year = today.getFullYear();
             const dateString = `${year}-${month}-${day}`;
             document.getElementById('invoiceDate').value = dateString;
+
+            // Usando la primera opción para establecer el ID de factura
+            document.getElementById('idFactura').innerHTML = `<strong>Número de factura:</strong> ${generateUUID()}`;
         }
 
         // Función para añadir un producto a la factura
@@ -157,7 +160,6 @@
             document.getElementById('total').innerText = `$${total.toFixed(2)}`;
         }
 
-
         function generateUUID() { // Public Domain/MIT
             var d = new Date().getTime(); //Timestamp
             var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0; //Time in microseconds since page-load or 0 if unsupported
@@ -173,8 +175,7 @@
                 return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
             });
         }
-        let id = generateUUID();
-        document.getElementById('idHeader').innerText = generateUUID();
+
         // Ejecutar la función cuando se carga la página
         window.onload = setCurrentDate;
     </script>
@@ -188,13 +189,12 @@
         <!-- Encabezado de la factura -->
         <div class="invoice-header">
             <h1>Factura</h1>
-            <h4 id="idHeader"></h4>
         </div>
 
         <!-- Información del cliente -->
         <div class="invoice-info">
             <p><strong>Fecha:</strong> <input type="date" id="invoiceDate" /></p>
-            <p><strong>Número de factura:</strong> #00123</p>
+            <p id="idFactura"><strong></strong> </p>
             <p><strong>Cliente:</strong> Juan Pérez</p>
             <p><strong>Dirección:</strong> Calle Castellana 123, Madrid, España</p>
         </div>
