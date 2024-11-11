@@ -32,12 +32,6 @@
             line-height: 1.5;
         }
 
-        .nombreAlumno {
-            text-decoration: none;
-            cursor: pointer;
-            color: black;
-        }
-
         .container {
             max-width: 800px;
             margin: 2rem auto;
@@ -66,8 +60,8 @@
         }
 
         th {
-            text-align: center;
-            color: black;
+            background-color: var(--primary);
+            color: white;
         }
 
         /* Quitar el efecto hover */
@@ -82,7 +76,6 @@
             border-radius: 0.25rem;
             cursor: pointer;
             margin-right: 0.5rem;
-            text-decoration: none;
         }
 
         .btn-edit {
@@ -103,7 +96,7 @@
 
         .subject-tag {
             display: inline-block;
-            background-color: #e5e5e5;
+            background-color: var(--primary-light);
             color: var(--text);
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
@@ -123,9 +116,10 @@
             z-index: 1; /* Encima de otros elementos */
             left: 0;
             top: 0;
-            width: 50%; /* Ancho completo */
-            height: 50%; /* Alto completo */
+            width: 100%; /* Ancho completo */
+            height: 100%; /* Alto completo */
             overflow: auto; /* Desplazamiento si es necesario */
+            background-color: rgb(0,0,0); /* Fondo negro */
             background-color: rgba(0,0,0,0.4); /* Fondo negro con opacidad */
         }
 
@@ -199,7 +193,7 @@
                 $subjectTagsHtml = !empty($subjectTags) ? implode(" ", $subjectTags) : "<span class='no-subjects'>No inscrito en ninguna asignatura</span>";
 
                 echo "<tr>
-                        <td class='nombreAlumno'><a href='#' style='text-decoration : none; color:black' onclick='openStudentModal({$row['estudiante_id']})'>{$row['estudiante_nombre']}</a></td>
+                        <td><a href='#' onclick='openStudentModal({$row['estudiante_id']})'>{$row['estudiante_nombre']}</a></td>
                         <td>{$subjectTagsHtml}</td>
                         <td>
                             <a href='editar_estudiante.php?id={$row['estudiante_id']}' class='btn-edit'>Editar</a>
@@ -222,25 +216,88 @@
 <div id="studentModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
+        <h3>Información del Estudiante</h3>
+        <input type="hidden" id="studentIdInput">
         <div id="modal-body">
-            <!-- La información del estudiante se cargará aquí -->
+            <table id="studentTable" style="display:none; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Asignatura</th>
+                        <th>Horas</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody id="studentDataBody">
+                    <!-- Aquí se cargarán los datos del estudiante -->
+                </tbody>
+            </table>
+            <div id="promedioContainer" style="display:none;">
+                <p><strong>Promedio:</strong> <span id="studentAverage"></span></p>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Función para abrir el modal y cargar información del estudiante
     function openStudentModal(studentId) {
-        // Realizar la solicitud AJAX para obtener los datos del estudiante
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `./operacionesPHP/alumno/buscar_estudiante.php?id=${studentId}`, true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('modal-body').innerHTML = xhr.responseText;
-                document.getElementById('studentModal').style.display = "block";
-            }
-        };
-        xhr.send();
+        document.getElementById('studentIdInput').value = studentId; // Guardar ID en un input oculto
+        fetchStudentData();
+        document.getElementById('studentModal').style.display = "block"; // Mostrar el modal
+    }
+
+    function fetchStudentData() {
+        const studentId = document.getElementById('studentIdInput').value;
+        if (!studentId) {
+            alert("Por favor, ingrese un número identificador válido.");
+            return;
+        }
+
+        fetch(`./operacionesPHP/alumno/buscar_estudiante_nota.php?id=${studentId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('studentDataBody');
+                tableBody.innerHTML = ""; // Limpiar tabla
+
+                if (data.error) {
+                    alert(data.error);
+                    document.getElementById('studentTable').style.display = 'none'; // Ocultar tabla si hay error
+                    return;
+                }
+
+                // Llenar la tabla con asignaturas
+                let totalNotas = 0;
+                data.asignaturas.forEach(asignatura => {
+                    const row = `
+                        <tr>
+                            <td>${asignatura.nombre}</td>
+                            <td>${asignatura.horas} horas</td>
+                            <td><input type='number' class='nota form-control' value='${asignatura.nota}' /></td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                    totalNotas += asignatura.nota; // Acumular nota
+                });
+
+                // Mostrar la tabla de resultados si hay datos
+                if (data.asignaturas.length > 0) {
+                    document.getElementById('studentTable').style.display = 'table';
+                    const promedio = (totalNotas / data.asignaturas.length).toFixed(2);
+                    document.getElementById("studentAverage").innerText = promedio; // Mostrar promedio
+                    document.getElementById("promedioContainer").style.display = 'block';
+                } else {
+                    alert("No se encontraron asignaturas para este estudiante.");
+                    document.getElementById('studentTable').style.display = 'none'; // Ocultar tabla si no hay asignaturas
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Error al buscar el estudiante. Por favor, intente de nuevo.");
+            });
     }
 
     // Función para cerrar el modal

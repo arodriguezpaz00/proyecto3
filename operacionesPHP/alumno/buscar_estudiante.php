@@ -9,8 +9,8 @@ if (!$conexion) {
 // Obtener el ID del estudiante desde el parámetro de consulta
 $studentId = $_GET['id'];
 
-// Consulta para buscar el estudiante por su ID
-$query = "SELECT * FROM estudiantes WHERE id = ?";
+// Consulta para buscar el estudiante por su ID, incluyendo el promedio
+$query = "SELECT nombre, email, dni, telefono, promedio FROM estudiantes WHERE id = ?";
 $stmt = mysqli_prepare($conexion, $query);
 mysqli_stmt_bind_param($stmt, "i", $studentId);
 mysqli_stmt_execute($stmt);
@@ -23,8 +23,11 @@ if ($row = mysqli_fetch_assoc($result)) {
     echo "<p><strong>DNI:</strong> " . htmlspecialchars($row['dni']) . "</p>";
     echo "<p><strong>Teléfono:</strong> " . htmlspecialchars($row['telefono']) . "</p>";
     
+    // Mostrar el promedio
+    echo "<p><strong>Promedio:</strong> " . htmlspecialchars($row['promedio']) . "</p>";
+    
     // Consulta para obtener las asignaturas en las que está inscrito el estudiante
-    $queryAsignaturas = "SELECT asignaturas.nombre, asignaturas.horas 
+    $queryAsignaturas = "SELECT asignaturas.id, asignaturas.nombre, asignaturas.horas 
                          FROM asignaturas
                          JOIN estudiante_asignatura ON asignaturas.id = estudiante_asignatura.asignatura_id
                          WHERE estudiante_asignatura.estudiante_id = ?";
@@ -36,8 +39,9 @@ if ($row = mysqli_fetch_assoc($result)) {
     if (mysqli_num_rows($resultAsignaturas) > 0) {
         echo "<h5>Asignaturas Inscritas:</h5><ul>";
         while ($asignatura = mysqli_fetch_assoc($resultAsignaturas)) {
-            echo "<li>" . htmlspecialchars($asignatura['nombre']) . " (" . htmlspecialchars($asignatura['horas']) . " horas)</li>";
+            echo "<li data-asignatura-id='" . htmlspecialchars($asignatura['id']) . "'>" . htmlspecialchars($asignatura['nombre']) . " (" . htmlspecialchars($asignatura['horas']) . " horas)</li>";
         }
+        
         echo "</ul>";
     } else {
         echo "<p>El estudiante no está inscrito en ninguna asignatura.</p>";

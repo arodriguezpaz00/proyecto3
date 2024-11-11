@@ -203,10 +203,11 @@
                         <td>{$subjectTagsHtml}</td>
                         <td>
                             <a href='editar_estudiante.php?id={$row['estudiante_id']}' class='btn-edit'>Editar</a>
-                            <form action='borrar_estudiante.php' method='POST' style='display:inline;'>
-                                <input type='hidden' name='estudiante_id' value='{$row['estudiante_id']}'>
-                                <button type='submit' class='btn-delete'>Borrar</button>
-                            </form>
+                            <form action='./operacionesPHP/alumno/borrar_alumno.php' method='POST' style='display:inline;'>
+    <input type='hidden' name='estudiante_id' value='{$row['estudiante_id']}'>
+    <button type='submit' class='btn-delete'>Borrar</button>
+</form>
+
                         </td>
                     </tr>";
             }
