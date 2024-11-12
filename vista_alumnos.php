@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -59,7 +60,8 @@
             margin-bottom: 1.5rem;
         }
 
-        th, td {
+        th,
+        td {
             padding: 0.75rem;
             border: 1px solid var(--border);
             text-align: left;
@@ -75,7 +77,8 @@
             background-color: transparent;
         }
 
-        .btn-edit, .btn-delete {
+        .btn-edit,
+        .btn-delete {
             color: white;
             padding: 0.5rem 1rem;
             border: none;
@@ -118,23 +121,32 @@
 
         /* Estilos del modal */
         .modal {
-            display: none; /* Oculto por defecto */
-            position: fixed; /* Fijo en la pantalla */
-            z-index: 1; /* Encima de otros elementos */
+            display: none;
+            /* Oculto por defecto */
+            position: fixed;
+            /* Fijo en la pantalla */
+            z-index: 1;
+            /* Encima de otros elementos */
             left: 0;
             top: 0;
-            width: 50%; /* Ancho completo */
-            height: 50%; /* Alto completo */
-            overflow: auto; /* Desplazamiento si es necesario */
-            background-color: rgba(0,0,0,0.4); /* Fondo negro con opacidad */
+            width: 50%;
+            /* Ancho completo */
+            height: 50%;
+            /* Alto completo */
+            overflow: auto;
+            /* Desplazamiento si es necesario */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Fondo negro con opacidad */
         }
 
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto; /* 15% desde arriba y centrado */
+            margin: 15% auto;
+            /* 15% desde arriba y centrado */
             padding: 20px;
             border: 1px solid #888;
-            width: 80%; /* Ancho del modal */
+            width: 80%;
+            /* Ancho del modal */
         }
 
         .close {
@@ -152,30 +164,31 @@
         }
     </style>
 </head>
+
 <body>
-<?php include 'logs/header.php'; ?>
+    <?php include 'logs/header.php'; ?>
 
-<div class="container">
-    <h2>Lista de Alumnos y Asignaturas</h2>
+    <div class="container">
+        <h2>Lista de Alumnos y Asignaturas</h2>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre del Estudiante</th>
-                <th>Asignaturas</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Conexión a la base de datos
-            $conexion = mysqli_connect("localhost", "root", "", "academia");
-            if (!$conexion) {
-                die("Conexión fallida: " . mysqli_connect_error());
-            }
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre del Estudiante</th>
+                    <th>Asignaturas</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Conexión a la base de datos
+                $conexion = mysqli_connect("localhost", "root", "", "academia");
+                if (!$conexion) {
+                    die("Conexión fallida: " . mysqli_connect_error());
+                }
 
-            // Consulta para obtener todos los estudiantes y las asignaturas asociadas
-            $query = "
+                // Consulta para obtener todos los estudiantes y las asignaturas asociadas
+                $query = "
                 SELECT e.id AS estudiante_id, e.nombre AS estudiante_nombre, 
                        GROUP_CONCAT(a.nombre SEPARATOR ', ') AS asignaturas
                 FROM estudiantes e
@@ -184,21 +197,21 @@
                 GROUP BY e.id
             ";
 
-            $result = mysqli_query($conexion, $query);
-            while ($row = mysqli_fetch_assoc($result)) {
-                // Separar las asignaturas en un array
-                $subjects = explode(", ", $row['asignaturas']);
-                $subjectTags = [];
+                $result = mysqli_query($conexion, $query);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    // Separar las asignaturas en un array
+                    $subjects = explode(", ", $row['asignaturas']);
+                    $subjectTags = [];
 
-                if (!empty($row['asignaturas'])) {
-                    $subjectTags = array_map(function($subject) {
-                        return "<span class='subject-tag'>$subject</span>";
-                    }, $subjects);
-                }
+                    if (!empty($row['asignaturas'])) {
+                        $subjectTags = array_map(function ($subject) {
+                            return "<span class='subject-tag'>$subject</span>";
+                        }, $subjects);
+                    }
 
-                $subjectTagsHtml = !empty($subjectTags) ? implode(" ", $subjectTags) : "<span class='no-subjects'>No inscrito en ninguna asignatura</span>";
+                    $subjectTagsHtml = !empty($subjectTags) ? implode(" ", $subjectTags) : "<span class='no-subjects'>No inscrito en ninguna asignatura</span>";
 
-                echo "<tr>
+                    echo "<tr>
                         <td class='nombreAlumno'><a href='#' style='text-decoration : none; color:black' onclick='openStudentModal({$row['estudiante_id']})'>{$row['estudiante_nombre']}</a></td>
                         <td>{$subjectTagsHtml}</td>
                         <td>
@@ -210,54 +223,76 @@
 
                         </td>
                     </tr>";
-            }
+                }
 
-            // Cerrar conexión
-            mysqli_close($conexion);
-            ?>
-        </tbody>
-    </table>
-</div>
+                // Cerrar conexión
+                mysqli_close($conexion);
+                ?>
+            </tbody>
+        </table>
+    </div>
 
-<!-- Modal -->
-<div id="studentModal" class="modal">
+    <!-- Modal -->
+    <div id="studentModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modal-body">
+                <!-- La información del estudiante se cargará aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edición -->
+<div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <div id="modal-body">
-            <!-- La información del estudiante se cargará aquí -->
-        </div>
+        <h2>Editar Usuario</h2>
+        <form id="editForm">
+            <input type="hidden" name="id" id="userId">
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" id="nombre" required><br><br>
+
+            <label for="correo">Correo:</label>
+            <input type="email" name="correo" id="correo" required><br><br>
+
+            <label for="rol">Rol:</label>
+            <input type="text" name="rol" id="rol" required><br><br>
+
+            <button type="button" onclick="updateUser()">Guardar Cambios</button>
+        </form>
     </div>
 </div>
 
-<script>
-    // Función para abrir el modal y cargar información del estudiante
-    function openStudentModal(studentId) {
-        // Realizar la solicitud AJAX para obtener los datos del estudiante
-        const xhr = new XMLHttpRequest();
-        xhr.open("GET", `./operacionesPHP/alumno/buscar_estudiante.php?id=${studentId}`, true);
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                document.getElementById('modal-body').innerHTML = xhr.responseText;
-                document.getElementById('studentModal').style.display = "block";
-            }
-        };
-        xhr.send();
-    }
-
-    // Función para cerrar el modal
-    document.querySelector('.close').onclick = function() {
-        document.getElementById('studentModal').style.display = "none";
-    }
-
-    // Cerrar el modal si se hace clic fuera del contenido del modal
-    window.onclick = function(event) {
-        const modal = document.getElementById('studentModal');
-        if (event.target == modal) {
-            modal.style.display = "none";
+    <script>
+        // Función para abrir el modal y cargar información del estudiante
+        function openStudentModal(studentId) {
+            // Realizar la solicitud AJAX para obtener los datos del estudiante
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `./operacionesPHP/alumno/buscar_estudiante.php?id=${studentId}`, true);
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    document.getElementById('modal-body').innerHTML = xhr.responseText;
+                    document.getElementById('studentModal').style.display = "block";
+                }
+            };
+            xhr.send();
         }
-    }
-</script>
 
-<?php include 'logs/footer.php'; ?>
+        // Función para cerrar el modal
+        document.querySelector('.close').onclick = function() {
+            document.getElementById('studentModal').style.display = "none";
+        }
+
+        // Cerrar el modal si se hace clic fuera del contenido del modal
+        window.onclick = function(event) {
+            const modal = document.getElementById('studentModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    <?php include 'logs/footer.php'; ?>
 </body>
+
 </html>

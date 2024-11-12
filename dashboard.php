@@ -144,6 +144,9 @@
         .modal-button.view {
             background-color: var(--green);
         }
+        .modal-button.edit {
+    background-color: var(--purple);
+}
         .modal-close {
             margin-top: 1rem;
             color: var(--gray-700);
@@ -200,82 +203,93 @@
     </main>
 
     <!-- Modal Template -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle">Título del Modal</h2>
-            <div class="modal-buttons">
-                <button class="modal-button add">
-                    <i class="fas fa-plus"></i> Añadir
-                </button>
-                <button class="modal-button view">
-                    <i class="fas fa-eye"></i> Ver
-                </button>
-            </div>
-            <div class="modal-close" onclick="closeModal()">Cerrar</div>
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h2 id="modalTitle">Título del Modal</h2>
+        <div class="modal-buttons">
+            <button class="modal-button add" id="addButton">
+                <i class="fas fa-plus"></i> Añadir
+            </button>
+            <button class="modal-button edit" id="editButton">
+                <i class="fas fa-edit"></i> Editar
+            </button>
         </div>
+        <div class="modal-close" onclick="closeModal()">Cerrar</div>
     </div>
+</div>
+
 
     <script>
         const dashboardItems = [
-            {
-                title: "Acciones para Profesores",
-                iconClass: "fas fa-chalkboard-teacher",
-                color: "var(--blue)",
-                link: "acciones_profesores.php"
-            },
-            {
-                title: "Acciones para Alumnos",
-                iconClass: "fas fa-user-graduate",
-                color: "var(--green)",
-                link: "acciones_alumnos.php"
-            },
-            {
-                title: "Acciones para Asignaturas",
-                iconClass: "fas fa-book",
-                color: "var(--purple)",
-                link: "acciones_asignaturas.php"
-            },
-            {
-                title: "Acciones para Notas",
-                iconClass: "fas fa-clipboard-list",
-                color: "var(--red)",
-                link: "acciones_notas.php"
-            }
-        ];
+    {
+        title: "Acciones para Profesores",
+        iconClass: "fas fa-chalkboard-teacher",
+        color: "var(--blue)",
+        addLink: "registro_profe.php",
+        editLink: "vista_profesores.php",
+    },
+    {
+        title: "Acciones para Alumnos",
+        iconClass: "fas fa-user-graduate",
+        color: "var(--green)",
+        addLink: "registro_estudiante.php",
+        editLink: "vista_alumnos.php"        
+    },
+    {
+        title: "Acciones para Asignaturas",
+        iconClass: "fas fa-book",
+        color: "var(--purple)",
+        addLink: "registro_asignatura.php",
+        editLink: "editar_asignatura.php"
+    },
+    {
+        title: "Acciones para Notas",
+        iconClass: "fas fa-clipboard-list",
+        color: "var(--red)",
+        addLink: "añadir_nota.php",
+        editLink: "editar_nota.php",
+        deleteLink: "eliminar_nota.php"
+    }
+];
 
-        const dashboardGrid = document.getElementById('dashboardGrid');
-        const modal = document.getElementById('modal');
-        const modalTitle = document.getElementById('modalTitle');
+const dashboardGrid = document.getElementById('dashboardGrid');
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const addButton = document.getElementById('addButton');
+const editButton = document.getElementById('editButton');
 
-        // Mostrar el modal con el título adecuado
-        function openModal(title) {
-            modalTitle.textContent = title;
-            modal.style.display = "flex";
-        }
+// Función para abrir el modal y configurar los botones
+function openModal(item) {
+    modalTitle.textContent = item.title;
+    addButton.onclick = () => window.location.href = item.addLink;
+    editButton.onclick = () => window.location.href = item.editLink;
+    modal.style.display = "flex";
+}
 
-        // Cerrar el modal
-        function closeModal() {
-            modal.style.display = "none";
-        }
+// Cerrar el modal
+function closeModal() {
+    modal.style.display = "none";
+}
 
-        dashboardItems.forEach(item => {
-            const dashboardItem = document.createElement('a');
-            dashboardItem.href = item.link;
-            dashboardItem.className = 'dashboard-item';
-            dashboardItem.style.backgroundColor = item.color;
+// Crear los elementos del dashboard
+dashboardItems.forEach(item => {
+    const dashboardItem = document.createElement('a');
+    dashboardItem.className = 'dashboard-item';
+    dashboardItem.style.backgroundColor = item.color;
 
-            dashboardItem.innerHTML = `
-                <div class="dashboard-item-icon"><i class="${item.iconClass}"></i></div>
-                <h2 class="dashboard-item-title">${item.title}</h2>
-            `;
+    dashboardItem.innerHTML = `
+        <div class="dashboard-item-icon"><i class="${item.iconClass}"></i></div>
+        <h2 class="dashboard-item-title">${item.title}</h2>
+    `;
 
-            dashboardItem.addEventListener('click', function(event) {
-                event.preventDefault();
-                openModal(item.title);
-            });
+    dashboardItem.addEventListener('click', function(event) {
+        event.preventDefault();
+        openModal(item);
+    });
 
-            dashboardGrid.appendChild(dashboardItem);
-        });
+    dashboardGrid.appendChild(dashboardItem);
+});
+
 
         function updateClock() {
             const now = new Date();
